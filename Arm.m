@@ -19,10 +19,10 @@ r.qlim(4,2)=pi/2;
 r.qlim(5,1)=-pi/2;
 r.qlim(5,2)=pi/2;
 angles=r.ikcon(T)*(180/pi)
-angles(1)=((180/151)*angles(1))+11;
-angles(2)=((30/29)*angles(1))+14;
-angles(3)=((1)*angles(1))-90;
-angles(4)=-angles(1)+90;
+angles(1)=((30/29)*angles(1))+14;
+angles(2)=((180/151)*angles(2))+11;
+angles(3)=((1)*angles(3))-90;
+angles(4)=-angles(4)+90;
 % port at which your arduino is connected
 
 port = 'COM9';
