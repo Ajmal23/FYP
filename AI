@@ -1,0 +1,40 @@
+imageFolder='C:\Users\Aleeminati\Desktop';
+imds = imageDatastore(imageFolder);
+imageLabeler(imds)
+data = load('C:\Users\Aleeminati\Desktop\face.mat');
+gTruth=data.gTruth;
+trainingData = objectDetectorTrainingData(gTruth);
+blds = boxLabelDatastore(trainingData(:,2:end));
+anchorBoxes = estimateAnchorBoxes(blds,5);
+options = trainingOptions('sgdm', ...
+       'InitialLearnRate', 0.00001, ...
+       'Verbose',true, ...
+       'MiniBatchSize',4, ...
+       'MaxEpochs',30, ...
+       'Shuffle','every-epoch', ...
+       'VerboseFrequency',200, ...
+       'ExecutionEnvironment','multi-gpu'); 
+ lgraph = yolov2Layers([480,640,3],1,anchorBoxes,resnet50(),'activation_49_relu')
+ [detector,info] = trainYOLOv2ObjectDetector(trainingData,lgraph,options);
+ 
+acfDetector = trainACFObjectDetector(trainingData,'NegativeSamplesFactor',2);
+%  
+ figure
+plot(info.TrainingLoss)
+grid on
+xlabel('Number of Iterations')
+ylabel('Training Loss for Each Iteration')
+
+h=figure;
+while ishandle(h)
+    ima = snapshot(camera);
+    image(ima);
+    [bboxes,scores] = detect(acfDetector,ima);
+    [~,idx]=max(scores);
+    if((~isempty(bboxes)))
+     annotation=('Asher ke Abbu');
+     ima = insertObjectAnnotation(ima,'rectangle',bboxes(idx,:),annotation);
+    end
+    imshow(ima)
+    
+end
