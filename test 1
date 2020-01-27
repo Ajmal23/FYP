@@ -1,0 +1,224 @@
+dh=[0 10.16 0 -pi/2 0 0;
+    0 0 10.414 0 0 -pi/2;
+    0 0 11.43 0 0 0;
+    0 0 0 pi/2 0 pi/2;
+    0 15.24 0 0 0 0];
+r=SerialLink(dh);
+r.teach
+p = 'COM4';
+b = 'Uno';
+a = arduino(p,b,'Libraries','Servo');
+
+
+
+x=30;
+y=-10;
+z=15;
+x1=30;
+y1=10;
+z1=15;
+
+
+b=rpy2tr(90,0,30,'deg');
+T=transl(x,y,z);
+T1=transl(x1,y1,z1);
+% q=r.jtraj(T,T1,10)
+
+qo=[ 1 0 -1 0 2 ];
+angles=r.ikine(T,qo,'mask',[1 1 1 0 0 1]);
+i1=angles*180/pi
+r.plot(angles);
+r.fkine(angles)
+
+
+servo_motor_1 = servo(a, 'D8');
+servo_motor_2 = servo(a, 'D9');
+servo_motor_3 = servo(a, 'D10');
+servo_motor_4 = servo(a, 'D11');
+servo_motor_5 = servo(a, 'D12');
+
+writePosition(servo_motor_1, 0.5);
+writePosition(servo_motor_2, 0.5);
+writePosition(servo_motor_3, 0.5);
+writePosition(servo_motor_4, 0.5);
+
+pause(2);
+
+
+a=0.0061*i1(1)+0.5503;
+b=-0.0054*i1(2)+0.5339;
+c=-0.0054*i1(3)+0.5000;
+d=-0.0056*i1(4)+0.4967;
+e=angles(5);
+speedm=0.5-[a b c d ];
+mx=max(speedm);
+dv=abs(speedm/mx);
+
+
+
+for i=0:0.001:1
+    
+h1=readPosition(servo_motor_1);
+h2=readPosition(servo_motor_2);
+h3=readPosition(servo_motor_3);
+h4=readPosition(servo_motor_4);   
+ 
+if a>0.5
+    if h1<=a
+        h1=h1+(i*dv(1));
+        if h1<1
+        writePosition(servo_motor_1, h1);
+        else
+        writeposition(servo_motor_1,1);
+        end
+    else
+        a;
+    end
+elseif a<0.5
+    if h1>=a
+        h1=h1-(i*dv(1));
+        if h1>0
+        writePosition(servo_motor_1, h1);
+        else
+        writePosition(servo_motor_1,0);
+        end
+    else
+        a;
+    end
+end
+ 
+
+current_position=readPosition(servo_motor_1);
+ if current_position<h1
+    for angle=current_position:0.0005:h1
+        writePosition(servo_motor_1, angle);
+        
+    end
+else
+    for angle=current_position:-0.0005:h1
+        writePosition(servo_motor_1, angle);        
+    end
+end
+
+
+
+if b>=0.5
+    if h2<=b
+        h2=h2+(i*dv(2));
+            
+        if h2<1
+            writePosition(servo_motor_2, h2);
+           
+        elseif h2>=1
+            writePosition(servo_motor_2,1);
+        end
+    else
+        b;
+    end
+elseif b<0.5
+    if h2>=b
+        h2=h2-(i*dv(2));
+            if h2>0
+            writePosition(servo_motor_2, h2);
+            else
+            writePosition(servo_motor_2, 0);
+            end
+    else
+        b;
+    end
+end
+
+
+current_position=readPosition(servo_motor_2);
+ if current_position<h1
+    for angle=current_position:0.0005:h2
+        writePosition(servo_motor_2, angle);
+        
+    end
+else
+    for angle=current_position:-0.0005:h2
+        writePosition(servo_motor_2, angle);        
+    end
+end
+
+    
+
+if c>=0.5
+    if h3<=c
+        h3=h3+(i*dv(3));
+        writePosition(servo_motor_3, h3);
+    else
+        c;
+    end
+elseif c<0.5
+    if h3>=c
+        h3=h3-(i*dv(3));
+        if h3>0;
+        writePosition(servo_motor_3, h3);
+        else
+        writePosition(servo_motor_3, 0);
+        end
+    else
+        c;
+    end
+end
+
+current_position=readPosition(servo_motor_3);
+ if current_position<h3
+    for angle=current_position:0.0005:h3
+        writePosition(servo_motor_3, angle);
+        
+    end
+else
+    for angle=current_position:-0.0005:h3
+        writePosition(servo_motor_3, angle);        
+    end
+end
+
+
+
+
+
+if d>=0.5
+    if h4<=d
+        h4=h4+(i*dv(4));
+        writePosition(servo_motor_4, h4);
+    else
+        d;
+    end
+elseif d<0.5
+    if h4>=d
+        h4=h4-(i*dv(4));
+        if h4>0
+        writePosition(servo_motor_4, h4);
+        else
+        writePosition(servo_motor_4,0);
+        end
+    else
+        d;
+    end
+end
+
+
+current_position=readPosition(servo_motor_4);
+ if current_position<h4
+    for angle=current_position:0.0005:h4
+        writePosition(servo_motor_4, angle);
+        
+    end
+else
+    for angle=current_position:-0.0005:h4
+        writePosition(servo_motor_4, angle);        
+    end
+end
+
+
+
+end
+    
+
+
+
+
+
+
